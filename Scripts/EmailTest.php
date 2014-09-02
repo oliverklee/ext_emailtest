@@ -53,7 +53,7 @@ $nameAndAddress = '"' . $name . '" <' . $emailAddress . '>';
 echo 'The user ' . $nameAndAddress . ' seems to be fine.' . LF;
 
 
-$subjectPrefix = 'Test e-mail subject: ';
+$subjectPrefix = 'Test e-mail: ';
 $body = 'Test e-mail body';
 
 
@@ -85,7 +85,7 @@ echo LF . 'Sending using t3lib_mail_Message (SwiftMailer) ...' . LF;
 $swiftMail = t3lib_div::makeInstance('t3lib_mail_Message');
 $swiftMail->setSubject($subjectPrefix . 't3lib_mail_Message (SwiftMailer)');
 $swiftMail->setBody($body);
-$swiftMail->setSender(array($emailAddress => $name));
+$swiftMail->setFrom(array($emailAddress => $name));
 $swiftMail->setTo(array($emailAddress => $name));
 
 $swiftMailSuccess = (bool) $swiftMail->send();
@@ -94,6 +94,59 @@ if (!$swiftMailSuccess) {
 	exit;
 }
 echo 'Success.' . LF;
+
+
+echo LF . 'Getting the oelib mailer ...' . LF;
+/** @var Tx_Oelib_RealMailer $oelibMailer */
+$oelibMailer = Tx_Oelib_MailerFactory::getInstance()->getMailer();
+if ($oelibMailer === NULL) {
+	echo 'Error. Stopping.' . LF;
+	exit;
+}
+echo 'Success.' . LF;
+
+
+echo LF . 'Sending using the Tx_Oelib_RealMailer::mail ...' . LF;
+
+$oelibMailSuccess = $oelibMailer->mail(
+	$nameAndAddress, $subjectPrefix . 'Tx_Oelib_RealMailer::mail', $body, 'From: ' . $nameAndAddress
+);
+if (!$oelibMailSuccess) {
+	echo 'Error. Stopping.' . LF;
+	exit;
+}
+echo 'Success.' . LF;
+
+
+echo LF . 'Sending using the Tx_Oelib_RealMailer::sendEmail ...' . LF;
+
+$oelibMailSuccess = $oelibMailer->sendEmail(
+	$nameAndAddress, $subjectPrefix . 'Tx_Oelib_RealMailer::sendEmail', $body, 'From: ' . $nameAndAddress
+);
+if (!$oelibMailSuccess) {
+	echo 'Error. Stopping.' . LF;
+	exit;
+}
+echo 'Success.' . LF;
+
+
+echo LF . 'Sending using the Tx_Oelib_RealMailer::send (SwiftMailer) ...' . LF;
+
+/** @var Tx_Oelib_Mail $oelibMail */
+$oelibMail = t3lib_div::makeInstance('Tx_Oelib_Mail');
+$oelibMail->setSubject($subjectPrefix . 'Tx_Oelib_RealMailer::send (SwiftMailer)');
+$oelibMail->setMessage($body);
+$oelibMail->setSender($user);
+$oelibMail->addRecipient($user);
+
+try {
+	$oelibMailer->send($oelibMail);
+	echo 'Success.' . LF;
+} catch (Exception $exception) {
+	echo 'Error: ' . $exception->getMessage() . LF;
+	echo 'Stopping.' . LF;
+	exit;
+}
 
 
 echo LF . 'Finished!' . LF;

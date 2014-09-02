@@ -25,3 +25,6 @@ This will send test e-mails using the following methods:
 1. PHP mail function
 2. t3lib_div::plainMailEncoded
 3. t3lib_mail_Message (SwiftMailer)
+4. Tx_Oelib_RealMailer::mail
+5. Tx_Oelib_RealMailer::sendEmail
+6. Tx_Oelib_RealMailer::send (SwiftMailer)
