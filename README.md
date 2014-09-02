@@ -20,5 +20,8 @@ On the command line, run this from your TYPO3 installation path:
 
     typo3/cli_dispatch.phpsh emailtest
 
-This will send the following test e-mails:
+This will send test e-mails using the following methods:
 
+1. PHP mail function
+2. t3lib_div::plainMailEncoded
+3. t3lib_mail_Message (SwiftMailer)
